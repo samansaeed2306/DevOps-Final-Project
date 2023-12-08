@@ -32,7 +32,10 @@ jobs:
 
       - name: Determine service folder
         id: service
-        run: echo "::set-output name=folder::$(basename "$(find . -name Dockerfile -exec dirname {} \;)")"
+        run: |
+          BASE_FOLDER=$(find . -name Dockerfile -exec dirname {} \;)
+          echo "Base Folder: $BASE_FOLDER"
+          echo "::set-output name=folder::$BASE_FOLDER"
 
       - name: Build and push Docker image
         run: |
