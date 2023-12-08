@@ -16,7 +16,7 @@ def hello2():
   greeting = "Hello Doctors 2.0!"
   return greeting
 
-@app.route('/hello3')
+@app.route('/hello')
 def hello():
   greeting = "Hello Doctors!"
   return greeting
