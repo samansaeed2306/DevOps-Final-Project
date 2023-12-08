@@ -14,7 +14,7 @@ mongo = PyMongo(app)
 #   { 'id': "5",'doctor': "2", 'date': "22 Nov 2023", 'rating':"Good"  },
 # ]
 
-@app.route('/hello111234')
+@app.route('/hello1112345')
 def hello():
   greeting = "Hello world!"
   return greeting
