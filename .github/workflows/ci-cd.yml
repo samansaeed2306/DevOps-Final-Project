@@ -34,10 +34,10 @@ jobs:
         id: service
         run: |
           SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | xargs -I {} dirname {})
-          echo "::set-output name=folder::$SERVICE_FOLDER"
+          echo "SERVICE_FOLDER=$SERVICE_FOLDER" >> $GITHUB_ENV
 
       - name: Debug
-        run: echo "Service Folder:${{ steps.service.outputs.folder }}"
+        run: echo "Service Folder:${{ env.SERVICE_FOLDER }}"
 
       - name: Build and push Docker image
         run: |
@@ -49,15 +49,15 @@ jobs:
 
           # Build and push based on the service folder
           case "${{ steps.service.outputs.folder }}" in
-            "./doctors")
+            "doctors")
               docker build -t saman1/doctors-img:$DOCKER_TAG ./doctors
               docker push saman1/doctors-img:$DOCKER_TAG
               ;;
-            "./appointments")
+            "appointments")
               docker build -t saman1/appointments-img:$DOCKER_TAG ./appointments
               docker push saman1/appointments-img:$DOCKER_TAG
               ;;
-            "./frontend")
+            "frontend")
               docker build -t saman1/frontend-img:$DOCKER_TAG ./frontend
               docker push saman1/frontend-img:$DOCKER_TAG
               ;;
