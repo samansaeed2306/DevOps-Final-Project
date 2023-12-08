@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    paths:
+      - "appointments/**"
+      - "doctors/**"
+  push:
+    paths:
+      - "appointments/**"
+      - "doctors/**"
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Determine service folder
+        id: service
+        run: echo "::set-output name=folder::$(basename "$(find . -name Dockerfile -exec dirname {} \;)")"
+
+      - name: Build and push Docker image
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            DOCKER_TAG="pr-${{ github.event.number }}-${{ github.sha }}"
+          else
+            DOCKER_TAG="main-${{ github.sha }}"
+          fi
+
+          docker build -t saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG ./${{ steps.service.outputs.folder }}
+          docker push saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG
+
+      - name: Update Docker Compose file
+        run: |
+          sed -i "s|saman1/${{ steps.service.outputs.folder }}-microservice:.*|saman1/${{ steps.service.outputs.folder }}-microservice:$DOCKER_TAG|" docker-compose.yml
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code || echo "Changes found"
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.return-value == 'Changes found'
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add docker-compose.yml
+          git commit -m "Update ${{ steps.service.outputs.folder }} microservice image tag to $DOCKER_TAG"
+          git push origin main
