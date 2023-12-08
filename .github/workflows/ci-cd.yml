@@ -33,9 +33,8 @@ jobs:
       - name: Determine service folder
         id: service
         run: |
-          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | xargs -I {} dirname {} | sort -u)
-          echo "$SERVICE_FOLDER" > service_folder.txt
-          echo "SERVICE_FOLDER=$(cat service_folder.txt)" >> $GITHUB_ENV
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | head -n 1 | xargs -I {} dirname {})
+          echo "SERVICE_FOLDER=$SERVICE_FOLDER" >> $GITHUB_ENV
 
       - name: Debug
         run: echo "Service Folder:${{ env.SERVICE_FOLDER }}"
