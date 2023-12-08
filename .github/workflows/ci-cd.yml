@@ -22,13 +22,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # - name: Set up Docker
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: "14"
+
       - name: Login to DockerHub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Determine service folder
         id: service
         run: |
-          SERVICE_FOLDER=$(git diff --name-only ${{ github.sha }}^..${{ github.sha }} | grep -E 'doctors|appointments|frontend' | head -n 1 | xargs -I {} dirname {})
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | head -n 1 | xargs dirname)
           echo "SERVICE_FOLDER=$SERVICE_FOLDER" >> $GITHUB_ENV
 
       - name: Debug
@@ -36,8 +41,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          DOCKER_TAG="${{ github.sha }}"
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            DOCKER_TAG="pr-${{ github.event.number }}-${{ github.sha }}"
+          else
+            DOCKER_TAG="${{ github.sha }}"
+          fi
 
+          # Build and push based on the service folder
           case "${{ steps.service.outputs.folder }}" in
             "./doctors")
               docker build -t saman1/doctors-img:$DOCKER_TAG ./doctors
