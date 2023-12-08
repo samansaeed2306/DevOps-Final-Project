@@ -36,9 +36,8 @@ jobs:
           SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | xargs -I {} dirname {})
           echo "::set-output name=folder::$SERVICE_FOLDER"
 
-
       - name: Debug
-        run: echo "Service Folder: ${{ steps.service.outputs.folder }}"
+        run: echo "Service Folder:${{ steps.service.outputs.folder }}"
 
       - name: Build and push Docker image
         run: |
