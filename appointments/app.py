@@ -50,4 +50,4 @@ def getAppointment(id):
   return jsonify(appointment)
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0",port=7070)
+  app.run(host="0.0.0.0",port=6060)

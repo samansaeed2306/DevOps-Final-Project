@@ -13,7 +13,7 @@ mongo = PyMongo(app)
 
 @app.route('/hello')
 def hello():
-  greeting = "Hello world!"
+  greeting = "Hello Doctors!"
   return greeting
 
 @app.route('/check_mongodb_connection')

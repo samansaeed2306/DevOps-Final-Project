@@ -1,0 +1,49 @@
+
+version: '3.8'
+
+services:
+
+  frontend:
+    image: saman1/frontend-img:latest
+    ports:
+      - "3000:3000"
+    environment:
+      DOCTORS_SERVICE_URL: "doctors:9090"
+      APPOINTMENTS_SERVICE_URL: "appointments:6060"
+    networks:
+      - application
+
+  doctors:
+    image: saman1/doctors-img:latest
+    ports:
+      - "9090:9090"
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017/DevOps"
+      
+    networks:
+      - application
+
+  appointments:
+    image: saman1/appointment-img:latest
+    ports:
+      - "6060:6060"
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017/Appointments"
+      
+    networks:
+      - application
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - application
+
+volumes:
+  mongo-data:
+
+networks:
+  application:

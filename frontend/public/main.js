@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     async function fetchAppointmentsData() {
       try {
-        const response = await fetch('http://localhost:7070/appointments');
+        const response = await fetch('http://localhost:6060/appointments');
         const appointmentsData = await response.json();
   
         appointmentsTable.innerHTML = '';
