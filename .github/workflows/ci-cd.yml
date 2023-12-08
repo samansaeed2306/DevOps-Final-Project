@@ -49,15 +49,15 @@ jobs:
 
           # Build and push based on the service folder
           case "${{ steps.service.outputs.folder }}" in
-            "doctors")
+            "./doctors")
               docker build -t saman1/doctors-img:$DOCKER_TAG ./doctors
               docker push saman1/doctors-img:$DOCKER_TAG
               ;;
-            "appointments")
+            "./appointments")
               docker build -t saman1/appointments-img:$DOCKER_TAG ./appointments
               docker push saman1/appointments-img:$DOCKER_TAG
               ;;
-            "frontend")
+            "./frontend")
               docker build -t saman1/frontend-img:$DOCKER_TAG ./frontend
               docker push saman1/frontend-img:$DOCKER_TAG
               ;;
