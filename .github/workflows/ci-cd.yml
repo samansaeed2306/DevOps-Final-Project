@@ -33,7 +33,8 @@ jobs:
       - name: Determine service folder
         id: service
         run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^..HEAD | grep -E 'doctors|appointments|frontend')
+          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
+          CHANGED_FILES=$(git diff --name-only $PREVIOUS_COMMIT..HEAD | grep -E 'doctors|appointments|frontend')
 
           if [[ $CHANGED_FILES == *"doctors"* ]]; then
             SERVICE_FOLDER="./doctors"
