@@ -33,7 +33,19 @@ jobs:
       - name: Determine service folder
         id: service
         run: |
-          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'appointments|frontend' | head -n 1 | xargs dirname)
+          CHANGED_FILES=$(git diff --name-only ${{ github.sha }}^..${{ github.sha }} | grep -E 'doctors|appointments|frontend')
+
+          if [[ $CHANGED_FILES == *"doctors"* ]]; then
+            SERVICE_FOLDER="./doctors"
+          elif [[ $CHANGED_FILES == *"appointments"* ]]; then
+            SERVICE_FOLDER="./appointments"
+          elif [[ $CHANGED_FILES == *"frontend"* ]]; then
+            SERVICE_FOLDER="./frontend"
+          else
+            echo "No matching service folder found."
+            exit 1
+          fi
+
           echo "SERVICE_FOLDER=$SERVICE_FOLDER" >> $GITHUB_ENV
 
       - name: Debug
