@@ -22,10 +22,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker
-        uses: actions/setup-node@v3
-        with:
-          node-version: "14"
+      # - name: Set up Docker
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: "14"
 
       - name: Login to DockerHub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
