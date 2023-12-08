@@ -5,10 +5,12 @@ on:
     paths:
       - "appointments/**"
       - "doctors/**"
+      - "frontend/**"
   push:
     paths:
       - "appointments/**"
       - "doctors/**"
+      - "frontend/**"
     branches:
       - main
 
@@ -37,7 +39,7 @@ jobs:
           if [[ ${{ github.event_name }} == 'pull_request' ]]; then
             DOCKER_TAG="pr-${{ github.event.number }}-${{ github.sha }}"
           else
-            DOCKER_TAG="main-${{ github.sha }}"
+            DOCKER_TAG="${{ github.sha }}"
           fi
 
           docker build -t saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG ./${{ steps.service.outputs.folder }}
@@ -45,7 +47,8 @@ jobs:
 
       - name: Update Docker Compose file
         run: |
-          sed -i "s|saman1/${{ steps.service.outputs.folder }}-microservice:.*|saman1/${{ steps.service.outputs.folder }}-microservice:$DOCKER_TAG|" docker-compose.yml
+          cd ${{ github.workspace }}
+          sed -i "s|saman1/${{ steps.service.outputs.folder }}-img:.*|saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG|" docker-compose.yaml
 
       - name: Check for changes
         id: git-check
@@ -57,6 +60,6 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git add docker-compose.yml
+          git add docker-compose.yaml
           git commit -m "Update ${{ steps.service.outputs.folder }} microservice image tag to $DOCKER_TAG"
           git push origin main
