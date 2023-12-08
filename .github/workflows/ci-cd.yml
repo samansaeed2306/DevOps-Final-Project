@@ -35,7 +35,7 @@ jobs:
         run: |
           BASE_FOLDER=$(find . -name Dockerfile -exec dirname {} \;)
           echo "Base Folder: $BASE_FOLDER"
-          echo "::set-output name=folder::$BASE_FOLDER"
+          echo "BASE_FOLDER=$BASE_FOLDER" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         run: |
@@ -45,13 +45,13 @@ jobs:
             DOCKER_TAG="${{ github.sha }}"
           fi
 
-          docker build -t saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG ./${{ steps.service.outputs.folder }}
-          docker push saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG
+          docker build -t saman1/${BASE_FOLDER}-img:$DOCKER_TAG ./${BASE_FOLDER}
+          docker push saman1/${BASE_FOLDER}-img:$DOCKER_TAG
 
       - name: Update Docker Compose file
         run: |
           cd ${{ github.workspace }}
-          sed -i "s|saman1/${{ steps.service.outputs.folder }}-img:.*|saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG|" docker-compose.yaml
+          sed -i "s|saman1/${BASE_FOLDER}-img:.*|saman1/${BASE_FOLDER}-img:$DOCKER_TAG|" docker-compose.yaml
 
       - name: Check for changes
         id: git-check
@@ -64,5 +64,5 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git add docker-compose.yaml
-          git commit -m "Update ${{ steps.service.outputs.folder }} microservice image tag to $DOCKER_TAG"
+          git commit -m "Update ${{ BASE_FOLDER }} microservice image tag to $DOCKER_TAG"
           git push origin main
