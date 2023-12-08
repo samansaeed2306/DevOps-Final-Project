@@ -22,35 +22,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # - name: Set up Docker
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: "14"
-
       - name: Login to DockerHub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Determine service folder
         id: service
         run: |
-          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
-          CHANGED_FILES=$(git diff --name-only $PREVIOUS_COMMIT..HEAD | grep -E 'doctors|appointments|frontend')
-
-          if [[ $CHANGED_FILES == *"doctors"* ]]; then
-            SERVICE_FOLDER="./doctors"
-          elif [[ $CHANGED_FILES == *"appointments"* ]]; then
-            SERVICE_FOLDER="./appointments"
-          elif [[ $CHANGED_FILES == *"frontend"* ]]; then
-            SERVICE_FOLDER="./frontend"
-          else
-            echo "No matching service folder found."
-            exit 1
-          fi
-
-          echo "SERVICE_FOLDER=$SERVICE_FOLDER" >> $GITHUB_ENV
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'appointments|doctors|frontend' | xargs -I {} dirname {})
+          echo "::set-output name=folder::$SERVICE_FOLDER"
 
       - name: Debug
-        run: echo "Service Folder:${{ env.SERVICE_FOLDER }}"
+        run: echo "Service Folder:${{ steps.service.outputs.folder }}"
 
       - name: Build and push Docker image
         run: |
