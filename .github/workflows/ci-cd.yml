@@ -42,8 +42,24 @@ jobs:
             DOCKER_TAG="${{ github.sha }}"
           fi
 
-          docker build -t saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG ./${{ steps.service.outputs.folder }}
-          docker push saman1/${{ steps.service.outputs.folder }}-img:$DOCKER_TAG
+          # Build and push based on the service folder
+          case "${{ steps.service.outputs.folder }}" in
+            "doctors")
+              docker build -t saman1/doctors-img:$DOCKER_TAG ./doctors
+              docker push saman1/doctors-img:$DOCKER_TAG
+              ;;
+            "appointments")
+              docker build -t saman1/appointments-img:$DOCKER_TAG ./appointments
+              docker push saman1/appointments-img:$DOCKER_TAG
+              ;;
+            "frontend")
+              docker build -t saman1/frontend-img:$DOCKER_TAG ./frontend
+              docker push saman1/frontend-img:$DOCKER_TAG
+              ;;
+            *)
+              echo "Invalid service folder"
+              ;;
+          esac
 
       - name: Update Docker Compose file
         run: |
