@@ -32,7 +32,10 @@ jobs:
 
       - name: Determine service folder
         id: service
-        run: echo "::set-output name=folder::$(basename "$(find . -name Dockerfile -exec dirname {} \;)")"
+        run: |
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | xargs -I {} dirname {})
+          echo "::set-output name=folder::$SERVICE_FOLDER"
+
 
       - name: Debug
         run: echo "Service Folder: ${{ steps.service.outputs.folder }}"
