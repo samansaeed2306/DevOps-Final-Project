@@ -28,7 +28,7 @@ jobs:
       - name: Determine service folder
         id: service
         run: |
-          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'appointments|frontend' | xargs -I {} dirname {})
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'frontend' | xargs -I {} dirname {})
           echo "::set-output name=folder::$SERVICE_FOLDER"
 
       - name: Debug
@@ -48,7 +48,7 @@ jobs:
               docker build -t saman1/appointments-img:$DOCKER_TAG ./appointments
               docker push saman1/appointments-img:$DOCKER_TAG
               ;;
-              
+
             "./doctors")
               docker build -t saman1/doctors-img:$DOCKER_TAG ./doctors
               docker push saman1/doctors-img:$DOCKER_TAG
