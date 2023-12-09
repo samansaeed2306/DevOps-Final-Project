@@ -1,31 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  "appointments-deployment"
+  name: "appoint-deploy"
   namespace: appoint-microservice
   labels:
-    app:  "appointments-deployment"
+    app: "appoint-deploy"
 spec:
   selector:
     matchLabels:
-      app: "appointments-deployment"
-  replicas: 1
+      app: "appoint-deploy"
+  replicas: 2
   strategy:
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      maxSurge: 1
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app:  "appointments-deployment"
+        app: "appoint-deploy"
     spec:
       containers:
-      - name:  "appointments-deployment"
-        image:  saman1/appointments-img
+      - name: "appoint-deploy"
+        image: saman1/appointments-img
         ports:
-        - containerPort:  6060
-          name:  "appointments-deployment"
+        - containerPort: 6060
+          name: "appoint-deploy"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 6060
+          initialDelaySeconds: 3
+          failureThreshold: 2
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health2
+            port: 6060
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 1
 
 ---
 apiVersion: v1
@@ -35,7 +58,7 @@ metadata:
   namespace: appoint-microservice
 spec:
   selector:
-    app: "appointments-deployment"
+    app: "appoint-deploy"
   type: NodePort
   sessionAffinity: None
   sessionAffinityConfig:
