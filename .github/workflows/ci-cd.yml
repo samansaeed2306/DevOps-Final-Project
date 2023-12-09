@@ -28,7 +28,7 @@ jobs:
       - name: Determine service folder
         id: service
         run: |
-          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'doctors|appointments|frontend' | xargs -I {} dirname {})
+          SERVICE_FOLDER=$(find . -type f -name Dockerfile | grep -E 'frontend' | xargs -I {} dirname {})
           echo "::set-output name=folder::$SERVICE_FOLDER"
 
       - name: Debug

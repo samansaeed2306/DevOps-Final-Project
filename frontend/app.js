@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html'); // Adjust the path to your HTML file
 });
 
-app.get('/hello1', (req, res) => {
+app.get('/hello', (req, res) => {
   res.send('Hello world\n');
 });
 
@@ -24,7 +24,7 @@ app.get('/api/doctors', async (req, res) => {
   console.log('Doctors Service URL:', process.env.DOCTORS_SERVICE_URL);
 
   try {
-    const response = await axios.get(String(`http://localhost:9090/doctors`));
+    const response = await axios.get(String(`http://${url}/doctors`));
     const doctors = response.data;
     res.json(doctors);
   } catch (error) {
@@ -38,7 +38,7 @@ app.get('/api/appointments', async (req, res) => {
   console.log('Appointments Service URL:', url);
 
   try {
-    const response = await axios.get(String(`http://localhost:7070/appointments`));
+    const response = await axios.get(String(`http://${url}/appointments`));
     const appointments = response.data;
     res.json(appointments);
   } catch (error) {
