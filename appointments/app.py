@@ -16,7 +16,7 @@ mongo = PyMongo(app)
 
 @app.route('/hello')
 def hello():
-  greeting = "Hello Dear Appointments"
+  greeting = "Hello Appointments"
   return greeting
 
 @app.route('/check_mongodb_connection')
