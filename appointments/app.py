@@ -26,6 +26,9 @@ def check_mongodb_connection():
         return jsonify({"status": "success", "message": "MongoDB connection successful"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"MongoDB connection error: {str(e)}"}), 500
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok", "message": "Health check passed"})
     
     
 @app.route('/appointments', methods=["GET"])

@@ -1,68 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "doc-deploy"
-  namespace: doctors-microservice
-  labels:
-    app: "doc-deploy"
+  name: doctors-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: "doc-deploy"
-  replicas: 2
+      app: doctors
   template:
     metadata:
       labels:
-        app: "doc-deploy"
+        app: doctors
     spec:
       containers:
-      - name: "doc-deploy"
-        image: saman1/doctors-img
-        ports:
-        - containerPort: 9090
-          name: "doc-deploy"
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 9090
-          initialDelaySeconds: 3
-          failureThreshold: 2
-          periodSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: /health2
-            port: 9090
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 3
-          successThreshold: 1
-          timeoutSeconds: 1
-
+        - name: doctors
+          image: saman1/doctors-img:latest
+          ports:
+            - containerPort: 9090
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongodb:27017/DevOps"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: "doctors-service"
-  namespace: doctors-microservice
+  name: doctors-service
 spec:
   selector:
-    app: "doc-deploy"
-  type: NodePort
-  sessionAffinity: None
-  sessionAffinityConfig:
-    clientIP:
-      timeoutSeconds: 10800
+    app: doctors
   ports:
-  - name: "doctors-service"
-    port: 90
-    targetPort: 9090
-  - name: "http-requests"
-    port: 9090
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
 

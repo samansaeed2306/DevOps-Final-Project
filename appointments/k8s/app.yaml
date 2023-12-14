@@ -1,71 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "appoint-deploy"
-  namespace: appoint-microservice
-  labels:
-    app: "appoint-deploy"
+  name: appointments-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: "appoint-deploy"
-  replicas: 2
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
+      app: appointments
   template:
     metadata:
       labels:
-        app: "appoint-deploy"
+        app: appointments
     spec:
       containers:
-      - name: "appoint-deploy"
-        image: saman1/appointments-img
-        ports:
-        - containerPort: 6060
-          name: "appoint-deploy"
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 6060
-          initialDelaySeconds: 3
-          failureThreshold: 2
-          periodSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: /health2
-            port: 6060
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 3
-          successThreshold: 1
-          timeoutSeconds: 1
-
+        - name: appointments
+          image: saman1/appointment-img:latest
+          ports:
+            - containerPort: 6060
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongodb:27017/Appointments"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: "appointments-service"
-  namespace: appoint-microservice
+  name: appointments-service
 spec:
   selector:
-    app: "appoint-deploy"
-  type: NodePort
-  sessionAffinity: None
-  sessionAffinityConfig:
-    clientIP:
-      timeoutSeconds: 10800
+    app: appointments
   ports:
-  - name: "appointments-service"
-    port: 6060
-    targetPort: 6060
-   
+    - protocol: TCP
+      port: 80
+      targetPort: 6060
+
