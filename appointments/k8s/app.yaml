@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: appointments
-          image: saman1/appointment-img:latest
+          image: saman1/appointments-img:latest
           ports:
             - containerPort: 6060
           env:
