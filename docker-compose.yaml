@@ -14,7 +14,7 @@ services:
       - application
 
   doctors:
-    image: saman1/doctors-img:1
+    image: saman1/doctors-img:3
     ports:
       - "9090:9090"
     environment:
