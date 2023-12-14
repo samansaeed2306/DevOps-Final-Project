@@ -13,7 +13,7 @@ mongo = PyMongo(app)
 # ]
 
 
-@app.route('/hello1')
+@app.route('/hello')
 def hello():
   greeting = "Hello Doctors!"
   return greeting
