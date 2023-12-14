@@ -24,7 +24,7 @@ services:
       - application
 
   appointments:
-    image: saman1/appointments-img:15
+    image: saman1/appointments-img:16
     ports:
       - "6060:6060"
     environment:
