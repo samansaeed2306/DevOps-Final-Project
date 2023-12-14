@@ -35,7 +35,7 @@ spec:
         - name: MONGO_DB_NAME
           valueFrom:
             configMapKeyRef:
-              name: doctors-configMap
+              name: doctors-configmap
               key: MONGO_DB_NAME
         readinessProbe:
           failureThreshold: 4
@@ -60,18 +60,19 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: doctors-configMap
+  name: doctors-configmap
 data:
   MONGO_DB_NAME: "DevOps"
 ---
-apiVersion: v1 
-kind: Secret 
+apiVersion: v1
+kind: Secret
 metadata:
-name: doctors-secret
+  name: doctors-secret
 type: Opaque
 data:
-mongo-uri: eXRvdWd2YmtfL21vbmdvLXNlcnZpY2U6MjcwMTc=
-
+  mongo-uri: bW9uZ29kYjovL21vbmdvLXNlcnZpY2U6MjcwMTc=
+  NAME: YW1UYQ==
+  PASSWORD: MTIzNDU2
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -10,8 +10,6 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  annotations:
-    description: "PersistentVolumeClaim for MongoDB data storage"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,7 +29,7 @@ spec:
       - name: mongo
         image: mongo
         ports:
-          containerPort: 27017
+        - containerPort: 27017
         resources:
           requests:
             memory: "256Mi"
@@ -45,7 +43,7 @@ spec:
       volumes:
       - name: mongo-storage
         persistentVolumeClaim:
-          claimName: mongo-pvc
+          claimName: db-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -55,7 +53,7 @@ spec:
   selector:
     app: mongo
   ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
 
