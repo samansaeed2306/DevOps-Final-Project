@@ -71,10 +71,10 @@ jobs:
               # Cherry-pick the new commit onto the PR branch
               git cherry-pick $NEW_COMMIT_SHA
               # Push the changes back to the PR branch
-              git push https://${{ secrets. GH_PAT }}@github.com/${{ github.repository }} ${{ github.head_ref}}
+              git push https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }} ${{ github.head_ref}}
             else
               # If it's not a pull request, just push the changes to main
               git push
-              https://${{ secrets. GH_PAT }}@github.com/${{ github.repository }} HEAD:main
+              https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
             fi
           fi
