@@ -4,7 +4,7 @@ version: '3.8'
 services:
 
   frontend:
-    image: saman1/frontend-img:latest
+    image: saman1/frontend-img:1
     ports:
       - "3000:3000"
     environment:
