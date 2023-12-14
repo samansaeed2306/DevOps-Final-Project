@@ -13,13 +13,36 @@ spec:
         app: doctors
     spec:
       containers:
-        - name: doctors
-          image: saman1/doctors-img:latest
-          ports:
-            - containerPort: 9090
-          env:
-            - name: MONGO_URI
-              value: "mongodb://mongodb:27017/DevOps"
+      - name: doctors
+        image: saman1/doctors-img
+        ports:
+        - containerPort: 9090
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        env:
+        - name: cpu
+          value: "500m"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: doctors-secret
+              key: mongo-uri
+        - name: MONGO_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: doctors-configMap
+              key: MONGO_DB_NAME
+        readinessProbe:
+          failureThreshold: 4
+          httpGet:
+            path: /health
+            port: 9090
+
 ---
 apiVersion: v1
 kind: Service
@@ -30,6 +53,32 @@ spec:
     app: doctors
   ports:
     - protocol: TCP
-      port: 80
+      port: 9090
       targetPort: 9090
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doctors-configMap
+data:
+  MONGO_DB_NAME: "DevOps"
+---
+apiVersion: v1 
+kind: Secret 
+metadata:
+name: doctors-secret
+type: Opaque
+data:
+mongo-uri: eXRvdWd2YmtfL21vbmdvLXNlcnZpY2U6MjcwMTc=
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doctors
+data:
+  details.txt: |
+    I am Saman Saeed.
+    Currently pursuing software engineering from NUCES.
+    I enjoy learning DevOps.
