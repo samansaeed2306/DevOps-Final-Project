@@ -27,7 +27,7 @@ jobs:
             changed:
                - 'frontend/**'
 
-      - name: Set up Docker Buildx
+      - name: Set Docker Builds
         if: steps.check_changes.outputs.changed == 'true'
         uses: docker/setup-buildx-action@v3.0.0
 
@@ -35,8 +35,8 @@ jobs:
         if: steps.check_changes.outputs.changed
         uses: docker/login-action@v3.0.0
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.ACCESS_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
         if: steps.check_changes.outputs.changed == 'true'
@@ -45,16 +45,19 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-img:${{ github.run_number }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/frontend-img:${{ github.run_number }}
 
-      - name: Pull the latest changes from the repository
+      - name: Pull the repo
         if: steps.check_changes.outputs.changed == 'true'
         run: git pull origin ${{ github.ref }}
 
+      - name: Debug GitHub URL
+        run: echo "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}"
+        
       - name: Update docker-compose.yaml
         if: steps.check_changes.outputs.changed
         run: |
-          sed -i 's|${{ secrets.DOCKERHUB_USERNAME}}/frontend-img:.*|${{ secrets.DOCKERHUB_USERNAME}}/frontend-img:${{ github.run_number }}|' docker-compose.yaml
+          sed -i 's|${{ secrets.DOCKER_USERNAME}}/frontend-img:.*|${{ secrets.DOCKER_USERNAME}}/frontend-img:${{ github.run_number }}|' docker-compose.yaml
           # Only proceed if there are changes in the docker-compose.yaml
           if ! git diff --quiet; then
             git config --global user.name 'github-actions'
@@ -71,9 +74,9 @@ jobs:
               # Cherry-pick the new commit onto the PR branch
               git cherry-pick $NEW_COMMIT_SHA
               # Push the changes back to the PR branch
-              git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} ${{ github.head_ref}}
+              git push https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }} ${{ github.head_ref}}
             else
               # If it's not a pull request, just push the changes to main
-              git push https://${{ secrets.ACCESS_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+              git push https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
             fi
           fi
